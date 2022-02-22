@@ -12,6 +12,8 @@ COLOR5 = (254, 213, 196)
 COLOR6 = (48, 16, 38)
 COLOR7 = (66, 33, 11)
 
+#test
+
 
 def bird(x, y):
     dr.polygon(screen, COLOR7, ([x, y], [x - 70, y - 32], [x - 63, y - 32], [x + 5, y - 15], [x + 70, y - 30],
