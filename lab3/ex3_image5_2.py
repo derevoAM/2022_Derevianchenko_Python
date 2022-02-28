@@ -20,29 +20,38 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
-def bird(x, y):
+def bird(screen, x, y, k):
     """
     Function to draw a bird
+    :param screen: surface to draw a bird on
     :param x: coordinate
     :param y: coordinate
+    :param k: scale coefficient
     :return: none
     """
-    dr.polygon(screen, COLOR7, ([x, y], [x - 70, y - 32], [x - 63, y - 32], [x + 5, y - 15], [x + 70, y - 30],
-                                [x + 73, y - 28]))
+    surface = pygame.Surface([1500, 800], pygame.SRCALPHA)
+    shape_chop = pygame.Surface([1500, 800], pygame.SRCALPHA)
+
+    dr.polygon(surface, COLOR7, ([x, y], [x - 70, y - 32], [x - 63, y - 32], [x + 5, y - 15], [x + 70, y - 30],
+                                 [x + 73, y - 28]))
     for j in range(5):
-        dr.arc(screen, COLOR7, [x - 247, y - 34 + j, 265, 65], 0.1 * pi, 0.36 * pi)
+        dr.arc(surface, COLOR7, [x - 247, y - 34 + j, 265, 65], 0.1 * pi, 0.36 * pi)
     for j in range(7):
-        dr.arc(screen, COLOR7, [x + 5, y - 30 + j, 125, 45], (0.5 + j * 0.01) * pi, pi, 3)
+        dr.arc(surface, COLOR7, [x + 5, y - 30 + j, 125, 45], (0.5 + j * 0.01) * pi, pi, 3)
+
+    shape_chop.blit(surface, (0, 0))
+    shape_scaled = pygame.transform.scale(shape_chop, [k * 1500, k * 800])
+    screen.blit(shape_scaled, (x - 500, y - 300))
 
 
 def bird_squad(coordinates_array):
     """
     Function to draw a number of birds
-    :param coordinates_array: array of birds' coordinates [[x1, y1], [x2, y2],...]
+    :param coordinates_array: array of birds' coordinates and scales [[x1, y1, k1], [x2, y2, k2],...]
     :return: none
     """
     for coordinate in coordinates_array:
-        bird(coordinate[0], coordinate[1])
+        bird(screen, coordinate[0], coordinate[1], coordinate[2])
 
 
 def backend_fill(surface, width, fill_color, additional_color_1, additional_color_2, additional_color_3,
@@ -65,14 +74,18 @@ def backend_fill(surface, width, fill_color, additional_color_1, additional_colo
     dr.circle(surface, additional_color_4, (700, 170), 100)
 
 
-def draw_upper_mountain(surface, tuples_array, color):
+def draw_upper_mountain(screen, tuples_array, color, base_tuple, k):
     """
     Function to draw upper mountain
-    :param surface: surface to draw upper mountain onto
+    :param screen: surface to draw upper mountain onto
     :param tuples_array: coordinates of key points to draw a chain
     :param color: color used
+    :param base_tuple: centre coordinates
+    :param k: scale coefficient
     :return: none
     """
+    surface = pygame.Surface([1500, 800], pygame.SRCALPHA)
+    shape_chop = pygame.Surface([1500, 800], pygame.SRCALPHA)
 
     dr.polygon(surface, color, tuples_array)
 
@@ -85,19 +98,28 @@ def draw_upper_mountain(surface, tuples_array, color):
     dr.circle(surface, color, (1097, 160), 30)
 
     for iterator in range(2, 40, 1):
-        dr.arc(screen, color, [775, iterator, 300, 240], 1.45 * pi, 1.9 * pi, 2)
-    dr.polygon(screen, color, ([1100, 170], [1065, 165], [1050, 220]))
+        dr.arc(surface, color, [775, iterator, 300, 240], 1.45 * pi, 1.9 * pi, 2)
+    dr.polygon(surface, color, ([1100, 170], [1065, 165], [1050, 220]))
+
+    shape_chop.blit(surface, (0, 0))
+    shape_scaled = pygame.transform.scale(shape_chop, [k * 1500, k * 800])
+    screen.blit(shape_scaled, base_tuple)
 
 
-def draw_second_mountain(surface, tuples_array, color, additional_color):
+def draw_second_mountain(screen, tuples_array, color, additional_color, base_tuple, k):
     """
     Function to draw the second mountain
-    :param surface: surface to draw second mountain onto
+    :param screen: surface to draw second mountain onto
     :param tuples_array: coordinates of key points to draw a chain
     :param color: color used
     :param additional_color: additional color
+    :param base_tuple: centre coordinates
+    :param k: scale coefficient
     :return: none
     """
+    surface = pygame.Surface([1500, 800], pygame.SRCALPHA)
+    shape_chop = pygame.Surface([1500, 800], pygame.SRCALPHA)
+
     dr.polygon(surface, color, tuples_array)
     dr.aalines(surface, color, True, tuples_array)
 
@@ -115,15 +137,24 @@ def draw_second_mountain(surface, tuples_array, color, additional_color):
     dr.polygon(surface, color, ([1150, 395], [1050, 330], [930, 370], [850, 450], [1160, 470]))
     dr.polygon(surface, additional_color, ([0, 800], [1500, 800], [1500, 510], [0, 550]))
 
+    shape_chop.blit(surface, (0, 0))
+    shape_scaled = pygame.transform.scale(shape_chop, [k * 1500, k * 800])
+    screen.blit(shape_scaled, base_tuple)
 
-def draw_lowest_mountain(surface, tuples_array, color):
+
+def draw_lowest_mountain(screen, tuples_array, color, base_tuple, k):
     """
     Function to draw the lowest mountain
-    :param surface: surface to draw the lowest mountain onto
+    :param screen: surface to draw the lowest mountain onto
     :param tuples_array: coordinates of key points to draw a chain
     :param color: color used
+    :param base_tuple: centre coordinates
+    :param k: scale coefficient
     :return: none
     """
+    surface = pygame.Surface([1500, 800], pygame.SRCALPHA)
+    shape_chop = pygame.Surface([1500, 800], pygame.SRCALPHA)
+
     dr.polygon(surface, color, tuples_array)
     dr.aalines(surface, color, True, tuples_array)
 
@@ -139,7 +170,12 @@ def draw_lowest_mountain(surface, tuples_array, color):
     for i in range(20):
         dr.aaline(surface, color, (1238, 678 + i), (1260, 650 + i))
 
+    shape_chop.blit(surface, (0, 0))
+    shape_scaled = pygame.transform.scale(shape_chop, [k * 1500, k * 800])
+    screen.blit(shape_scaled, base_tuple)
 
+
+# Points that define the mountains
 upper_mountain_tuples = ([8, 370], [1500, 250], [1390, 210], [1340, 230], [1290, 202], [1265, 192], [1253, 189],
                          [1233, 189], [1180, 200], [1120, 150], [970, 270], [900, 240],
                          [860, 270], [800, 255], [725, 310], [675, 290], [570, 300], [390, 200], [365, 175],
@@ -154,14 +190,12 @@ second_mountain_tuples = (
 lowest_mountain_tuples = ([0, 400], [175, 440], [325, 590], [450, 730], [510, 780], [700, 780], [950, 670], [1000, 690],
                           [1110, 780], [1500, 475], [1500, 800], [0, 800])
 
-bird_coordinates = [[1170, 635], [1025, 590], [1200, 570], [940, 540], [715, 330], [720, 290], [580, 280], [595, 360],
-                    [580, 280]]
+bird_coordinates = [[715, 330, 0.6], [720, 290, 0.8], [580, 280, 1.2], [595, 360, 1]]
 
 backend_fill(screen, WIDTH, COLOR3, 'NavajoWhite', COLOR5, COLOR4, 'yellow')
-draw_upper_mountain(screen, upper_mountain_tuples, COLOR1)
-draw_second_mountain(screen, second_mountain_tuples, COLOR2, COLOR3)
-draw_lowest_mountain(screen, lowest_mountain_tuples, COLOR6)
-
+draw_upper_mountain(screen, upper_mountain_tuples, COLOR1, (-100, 0), 1.2)
+draw_second_mountain(screen, second_mountain_tuples, COLOR2, COLOR3, (0, 0), 1)
+draw_lowest_mountain(screen, lowest_mountain_tuples, COLOR6, (0, 0), 1)
 bird_squad(bird_coordinates)
 
 pygame.display.update()
